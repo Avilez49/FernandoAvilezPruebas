@@ -7,11 +7,11 @@ public class Usuario {
     private String password;
     private boolean isLogged;
 
-    public Usuario(String email, boolean isLogged, String name, String password) {
-        this.email = email;
-        this.isLogged = isLogged;
+    public Usuario(String name, String email, String password, boolean isLogged) {
         this.name = name;
+        this.email = email;
         this.password = password;
+        this.isLogged = isLogged;
     }
 
     public boolean isLogged() {
@@ -62,4 +62,11 @@ public class Usuario {
         this.isLogged = isLogged;
     }
     
+    /* 
+    docker run -p 3307:3306 --name mysql-dbunit -e MYSQL_ROOT_PASSWORD=123456 -d mysql:latest
+
+    docker exec -it mysql-dbunit mysql -uroot -p
+
+    Les debe pedir el password. Escribir : 123456
+    */
 }

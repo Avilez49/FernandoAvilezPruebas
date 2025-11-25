@@ -25,7 +25,7 @@ public class LoginServiceTest {
         String email = "prueba@correo.uady";
         String pass = "pass1234";
             // Mock findUsuarioByEmail
-        usuario = new Usuario(email,true,"Jerome",pass);
+        usuario = new Usuario(null, email, pass, false);
             // Mock de la dependencia
         idaologin = mock(IDAOLogin.class);
         when(idaologin.findUsuarioByEmail(email)).thenReturn(usuario);
@@ -44,7 +44,7 @@ public class LoginServiceTest {
         String email = "prueba@correo.uady";
         String pass =  "pass12";
             // Mock findUsuarioByEmail
-        usuario = new Usuario(email,true,"Jerome",pass );
+        usuario = new Usuario(null, email, pass, false);
             // Mock de la dependencia
         idaologin = mock(IDAOLogin.class);    
         when(idaologin.findUsuarioByEmail(email)).thenReturn(usuario);

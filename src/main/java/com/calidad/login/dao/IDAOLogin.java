@@ -15,5 +15,7 @@ public interface IDAOLogin {
 
     Usuario updateUser(Usuario userOld);
 
-    Usuario findById(int id);    
+    Usuario findById(int id);
+
+    Usuario findByUsuarioName(String name);    
 }

@@ -35,7 +35,7 @@ public class UserServiceTest {
         int id = 1;
 
         // Definición del Mock del metodo findUsuarioByEmail
-        usuario = new Usuario(email, false, nombre, pass);
+        usuario = new Usuario(nombre, email, pass, false);
 
         // Crear el Mock del método
         idaoUser = mock(IDAOLogin.class);
@@ -71,7 +71,7 @@ public class UserServiceTest {
         HashMap <Integer, Usuario> db = new HashMap<Integer, Usuario>();
  
         // Definición del Mock del metodo findUsuarioByEmail
-        usuario = new Usuario(email, false, nombre, pass);
+        usuario = new Usuario(nombre, email, pass , false);
 
         // Crear el Mock del método
         idaoUser = mock(IDAOLogin.class);
@@ -100,7 +100,7 @@ public class UserServiceTest {
         servicio = new UserService(idaoUser);
 
         // Ejercicio
-        Usuario resultadoEjecucion = servicio.createUser(email, nombre, pass);
+        Usuario resultadoEjecucion = servicio.createUser(nombre, email, pass);
 
         // Verificacion
         assertThat(tantes+1, is(db.size()));

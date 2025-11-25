@@ -41,4 +41,9 @@ public class DAOLogin implements IDAOLogin {
         throw new UnsupportedOperationException("Unimplemented method 'findById'");
     }
 
+    @Override
+    public Usuario findByUsuarioName(String name) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
 }
