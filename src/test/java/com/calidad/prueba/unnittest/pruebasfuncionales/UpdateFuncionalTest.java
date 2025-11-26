@@ -87,13 +87,11 @@ public class UpdateFuncionalTest {
     }
   }
 
-  // ESTE METODO ES EL QUE FALLABA POR EL IMPORT INCORRECTO
   private boolean isElementPresent(By by) {
     try {
       driver.findElement(by);
       return true;
     } catch (NoSuchElementException e) { 
-      // Ahora sí capturará org.openqa.selenium.NoSuchElementException
       return false;
     }
   }

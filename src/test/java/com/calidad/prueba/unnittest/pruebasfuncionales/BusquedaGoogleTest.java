@@ -44,7 +44,6 @@ public class BusquedaGoogleTest {
     driver.findElement(By.name("btnK")).click();
     driver.get("https://es.wikipedia.org/wiki/Informe");
     assertEquals("Informe - Wikipedia, la enciclopedia libre", driver.getTitle());
-    //ERROR: Caught exception [unknown command []]
     pause(5000);
   }
 

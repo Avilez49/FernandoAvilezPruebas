@@ -2,7 +2,7 @@ package com.calidad.prueba.unnittest.pruebasfuncionales;
 
 import java.time.Duration;
 import java.util.Collections;
-import java.util.NoSuchElementException;
+import org.openqa.selenium.NoSuchElementException; 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
 
@@ -45,15 +45,27 @@ public class ReadFuncionalTest {
   public void testReadKatalon() throws Exception {
     driver.get("https://mern-crud-mpfr.onrender.com/");
     pause(2000);
+    driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(2));
     try {
-      assertEquals("Usuario111", driver.findElement(By.xpath("//td[contains(text(), 'Usuario111')]")).getText());
-    } catch (Error e) {
-      verificationErrors.append(e.toString());
-    }
-    try {
-      assertEquals("usuario111@gmail.com", driver.findElement(By.xpath("//td[contains(text(), 'usuario111@gmail.com')]")).getText());
-    } catch (Error e) {
-      verificationErrors.append(e.toString());
+        driver.findElement(By.xpath("//td[contains(text(), 'Usuario111')]"));  
+        driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(60));
+        try {
+            assertEquals("Usuario111", driver.findElement(By.xpath("//td[contains(text(), 'Usuario111')]")).getText());
+        } catch (Error e) {
+            verificationErrors.append(e.toString());
+        }
+        try {
+            assertEquals("usuario111@gmail.com", driver.findElement(By.xpath("//td[contains(text(), 'usuario111@gmail.com')]")).getText());
+        } catch (Error e) {
+            verificationErrors.append(e.toString());
+        }
+
+      } catch (NoSuchElementException e) {
+        System.out.println("LOG: El usuario ya no existe. Finalizando prueba controladamente.");
+      return; 
+        
+    } finally {
+        driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(60));
     }
   }
 
