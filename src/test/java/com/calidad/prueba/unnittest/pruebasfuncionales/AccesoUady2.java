@@ -1,11 +1,11 @@
 package com.calidad.prueba.unnittest.pruebasfuncionales;
+
 import java.time.Duration;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
-
 import java.util.NoSuchElementException;
-
+import org.openqa.selenium.chrome.ChromeOptions;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -28,9 +28,15 @@ public class AccesoUady2 {
   @BeforeEach
   public void setUp() throws Exception {
     WebDriverManager.chromedriver().setup();
-    driver = new ChromeDriver();
+    ChromeOptions options = new ChromeOptions();
+    options.addArguments("--headless=new"); 
+    options.addArguments("--no-sandbox"); 
+    options.addArguments("--disable-dev-shm-usage"); 
+    options.addArguments("--disable-gpu"); 
+    options.addArguments("--window-size=1920,1080"); 
+    options.addArguments("--remote-allow-origins=*"); 
+    driver = new ChromeDriver(options);
     baseUrl = "https://www.google.com/";
-    driver.manage().window().maximize(); 
     driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(60));
     js = (JavascriptExecutor) driver;
   }
@@ -53,7 +59,9 @@ public class AccesoUady2 {
 
   @AfterEach
   public void tearDown() throws Exception {
-    driver.quit();
+    if (driver != null) {
+        driver.quit();
+    }
     String verificationErrorString = verificationErrors.toString();
     if (!"".equals(verificationErrorString)) {
       fail(verificationErrorString);
