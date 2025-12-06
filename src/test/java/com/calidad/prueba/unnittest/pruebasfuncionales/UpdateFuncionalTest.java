@@ -68,7 +68,7 @@ public class UpdateFuncionalTest {
     String nuevoEmail = "actualizado111@gmail.com";
     emailField.sendKeys(nuevoEmail);
     
-    driver.findElement(By.xpath("//button[contains(text(), 'Update')]")).click();
+    driver.findElement(By.xpath("//button[contains(text(), 'Save')]")).click();
     
     boolean mensajeExito = wait.until(ExpectedConditions.textToBePresentInElementLocated(
             By.xpath("//form//p"), 
