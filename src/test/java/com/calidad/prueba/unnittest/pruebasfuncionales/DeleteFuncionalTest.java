@@ -2,65 +2,67 @@ package com.calidad.prueba.unnittest.pruebasfuncionales;
 
 import java.time.Duration;
 import java.util.Collections;
-import org.openqa.selenium.NoSuchElementException;
-import static org.junit.jupiter.api.Assertions.fail;
-import static org.junit.jupiter.api.Assertions.assertFalse; 
-
+import java.util.List;
+import java.util.NoSuchElementException;
 import org.junit.jupiter.api.AfterEach;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.openqa.selenium.Alert;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.NoAlertPresentException;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
+
+import io.github.bonigarcia.wdm.WebDriverManager;
 
 public class DeleteFuncionalTest {
-
   private WebDriver driver;
+  private String baseUrl;
+  private boolean acceptNextAlert = true;
   private StringBuffer verificationErrors = new StringBuffer();
   JavascriptExecutor js;
-
+  
   @BeforeEach
   public void setUp() throws Exception {
+    WebDriverManager.chromedriver().setup();
     ChromeOptions options = new ChromeOptions();
     options.addArguments("--incognito");
     options.addArguments("--start-maximized");
     options.addArguments("--disable-search-engine-choice-screen");
-    options.addArguments("--disable-extensions");
-    options.addArguments("--no-sandbox");
     options.setExperimentalOption("excludeSwitches", Collections.singletonList("enable-automation"));
     options.setExperimentalOption("useAutomationExtension", false);
     driver = new ChromeDriver(options);
-    driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(5));
+    baseUrl = "https://www.google.com/";
+    driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(60));
     js = (JavascriptExecutor) driver;
   }
 
   @Test
-  public void testDeleteKatalon() throws Exception {
+  public void testDeleteUser() throws Exception {
     driver.get("https://mern-crud-mpfr.onrender.com/");
-    pause(2000);
-    boolean existeUsuario = isElementPresent(By.xpath("//td[contains(text(), 'Usuario222')]"));
-    if (existeUsuario) {
-        System.out.println("Usuario encontrado. Eliminando...");
-        driver.findElement(By.xpath("(.//*[normalize-space(text()) and normalize-space(.)='Usuario222'])[1]/following::button[2]")).click();
-        pause(1000); 
-        driver.findElement(By.xpath("//button[text()='Yes']")).click();
-        pause(1000); 
-        try {
-            if (isElementPresent(By.xpath("//i"))) {
-                driver.findElement(By.xpath("//i")).click();
-            }
-        } catch (Exception e) {
-        }
-        pause(2000); 
-        boolean sigueAhi = isElementPresent(By.xpath("//td[contains(text(), 'Usuario222')]"));
-        assertFalse(sigueAhi, "Error: Se intentó borrar pero el usuario sigue visible.");
-        System.out.println("EXITO: Usuario eliminado correctamente.");
-    } else {
-        System.out.println("AVISO: El 'Usuario222' ya no existe en la tabla. No es necesario borrarlo.");
-        System.out.println("Test Finalizado Exitosamente.");
-    }
+    WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+    WebElement celdaUsuario = wait.until(ExpectedConditions.visibilityOfElementLocated(
+            By.xpath("//td[text()='Usuario111']")
+    ));
+
+    int cantidadInicial = driver.findElements(By.xpath("//table/tbody/tr")).size();
+    driver.findElement(By.xpath("//tr[td[text()='Usuario111']]//button[contains(text(), 'Delete')]")).click();
+    pause(1000); 
+    driver.findElement(By.xpath("//button[text()='Yes']")).click();
+    boolean filasDisminuyeron = wait.until(driverInstance -> {
+        int cantidadActual = driverInstance.findElements(By.xpath("//table/tbody/tr")).size();
+        return cantidadActual == (cantidadInicial - 1);
+    });
+    assertTrue(filasDisminuyeron, "FALLO: El conteo de filas no disminuyó.");
+    List<WebElement> busquedaUsuario = driver.findElements(By.xpath("//td[text()='Usuario111']"));
+    assertTrue(busquedaUsuario.isEmpty(), "FALLO: 'Usuario111' sigue apareciendo en la tabla después de borrarlo.");
   }
 
   @AfterEach
@@ -81,6 +83,30 @@ public class DeleteFuncionalTest {
     }
   }
 
+  private boolean isAlertPresent() {
+    try {
+      driver.switchTo().alert();
+      return true;
+    } catch (NoAlertPresentException e) {
+      return false;
+    }
+  }
+
+  private String closeAlertAndGetItsText() {
+    try {
+      Alert alert = driver.switchTo().alert();
+      String alertText = alert.getText();
+      if (acceptNextAlert) {
+        alert.accept();
+      } else {
+        alert.dismiss();
+      }
+      return alertText;
+    } finally {
+      acceptNextAlert = true;
+    }
+  }
+  
   private void pause(long mils){
     try {
       Thread.sleep(mils);

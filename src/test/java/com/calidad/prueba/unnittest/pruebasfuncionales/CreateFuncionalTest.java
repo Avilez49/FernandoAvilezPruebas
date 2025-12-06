@@ -1,13 +1,12 @@
 package com.calidad.prueba.unnittest.pruebasfuncionales;
+
 import java.time.Duration;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.fail;
-
+import java.util.Collections;
 import java.util.NoSuchElementException;
-import java.util.Collections; 
-
-import org.dbunit.Assertion;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+import org.openqa.selenium.support.ui.ExpectedConditions; 
+import org.openqa.selenium.support.ui.WebDriverWait;      
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -18,9 +17,7 @@ import org.openqa.selenium.NoAlertPresentException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
-
 import io.github.bonigarcia.wdm.WebDriverManager;
-
 
 public class CreateFuncionalTest {
 
@@ -45,7 +42,7 @@ public class CreateFuncionalTest {
   }
 
   @Test
-  public void testCreateKatalon() throws Exception {
+  public void testPrueba() throws Exception {
     driver.get("https://mern-crud-mpfr.onrender.com/");
     driver.findElement(By.xpath("//div[@id='root']/div/div[2]/button")).click();
     pause(2000);
@@ -61,8 +58,12 @@ public class CreateFuncionalTest {
     driver.findElement(By.xpath("(.//*[normalize-space(text()) and normalize-space(.)='Gender'])[2]/following::div[1]")).click();
     driver.findElement(By.xpath("(.//*[normalize-space(text()) and normalize-space(.)='Male'])[1]/following::div[2]")).click();
     driver.findElement(By.xpath("(.//*[normalize-space(text()) and normalize-space(.)='Woah!'])[1]/following::button[1]")).click();
-    driver.findElement(By.xpath("//i")).click();
-    assertEquals("MERN CRUD", driver.getTitle());
+    WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+    boolean textoPresente = wait.until(ExpectedConditions.textToBe(
+            By.xpath("/html/body/div[3]/div/div[2]/form/div[4]/div/p"), 
+            "Successfully added!"
+    ));
+    assertTrue(textoPresente);
   }
 
   @AfterEach
@@ -82,7 +83,7 @@ public class CreateFuncionalTest {
       return false;
     }
   }
-
+  
   private boolean isAlertPresent() {
     try {
       driver.switchTo().alert();
@@ -106,6 +107,7 @@ public class CreateFuncionalTest {
       acceptNextAlert = true;
     }
   }
+
     private void pause(long mils){
     try {
       Thread.sleep(mils);

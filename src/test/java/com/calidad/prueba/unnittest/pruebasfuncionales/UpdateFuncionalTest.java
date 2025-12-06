@@ -2,10 +2,10 @@ package com.calidad.prueba.unnittest.pruebasfuncionales;
 
 import java.time.Duration;
 import java.util.Collections;
-import org.openqa.selenium.NoSuchElementException; 
+import java.util.NoSuchElementException;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
-import static org.junit.jupiter.api.Assertions.assertTrue; 
-
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -14,68 +14,63 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.NoAlertPresentException;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
+import io.github.bonigarcia.wdm.WebDriverManager;
 
 public class UpdateFuncionalTest {
-
   private WebDriver driver;
+  private String baseUrl;
   private boolean acceptNextAlert = true;
   private StringBuffer verificationErrors = new StringBuffer();
   JavascriptExecutor js;
-
+  
   @BeforeEach
   public void setUp() throws Exception {
+    WebDriverManager.chromedriver().setup();
     ChromeOptions options = new ChromeOptions();
     options.addArguments("--incognito");
     options.addArguments("--start-maximized");
     options.addArguments("--disable-search-engine-choice-screen");
-    options.addArguments("--disable-extensions");
-    options.addArguments("--no-sandbox");
-    options.addArguments("--disable-popup-blocking");
     options.setExperimentalOption("excludeSwitches", Collections.singletonList("enable-automation"));
     options.setExperimentalOption("useAutomationExtension", false);
     driver = new ChromeDriver(options);
-    driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(5)); 
+    baseUrl = "https://www.google.com/";
+    driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(60));
     js = (JavascriptExecutor) driver;
   }
 
   @Test
-  public void testUpdateKatalon() throws Exception {
+  public void testUpdateUser() throws Exception {
     driver.get("https://mern-crud-mpfr.onrender.com/");
-    pause(2000); 
-    if (!isElementPresent(By.xpath("//td[contains(text(), 'Usuario111')]"))) {
-        System.out.println("--- EL USUARIO NO EXISTE: Creándolo automáticamente... ---");
-        driver.findElement(By.xpath("//button[text()='Add New']")).click(); 
-        pause(1000);
-        driver.findElement(By.name("name")).sendKeys("Usuario111");
-        driver.findElement(By.name("email")).sendKeys("usuario111@gmail.com");
-        driver.findElement(By.name("age")).sendKeys("39");
-        driver.findElement(By.xpath("(.//*[normalize-space(text()) and normalize-space(.)='Gender'])[2]/following::div[1]")).click();
-        driver.findElement(By.xpath("(.//*[normalize-space(text()) and normalize-space(.)='Male'])[1]/following::div[2]")).click();
-        driver.findElement(By.xpath("//button[text()='Add']")).click();
-        driver.findElement(By.xpath("//i")).click(); 
-        pause(2000); 
-    }
-    driver.findElement(By.xpath("(.//*[normalize-space(text()) and normalize-space(.)='Usuario111'])[1]/following::button[1]")).click();
+    WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+    WebElement btnEdit = wait.until(ExpectedConditions.elementToBeClickable(
+        By.xpath("//tr[td[text()='Usuario111']]//button[contains(text(), 'Edit')]")
+    ));
+    btnEdit.click();
     pause(1000);
-    driver.findElement(By.name("name")).click();
-    driver.findElement(By.name("name")).clear();
-    driver.findElement(By.name("name")).sendKeys("Usuario222");
-    driver.findElement(By.name("email")).click();
-    driver.findElement(By.name("email")).clear();
-    driver.findElement(By.name("email")).sendKeys("usuario222@gmail.com");
-    driver.findElement(By.xpath("//button[text()='Save']")).click();
-    pause(1000);
-    driver.findElement(By.xpath("//i")).click();
-    pause(2000);
+    WebElement emailField = driver.findElement(By.name("email"));
+    emailField.click();
+    emailField.clear();
+    String nuevoEmail = "actualizado111@gmail.com";
+    emailField.sendKeys(nuevoEmail);
+    driver.findElement(By.xpath("//button[contains(text(), 'Save')]")).click(); 
+    boolean mensajeExito = wait.until(ExpectedConditions.textToBePresentInElementLocated(
+            By.xpath("//form//p"), 
+            "Successfully updated!"
+    ));
+    
+    assertTrue(mensajeExito, "No apareció el mensaje 'Successfully updated!'");
     try {
-        boolean existeNuevoUsuario = isElementPresent(By.xpath("//td[contains(text(), 'Usuario222')]"));
-        assertTrue(existeNuevoUsuario, "ERROR: El usuario no se actualizó a 'Usuario222'.");
-        System.out.println("ÉXITO: Test finalizado correctamente.");
-    } catch (Error e) {
-      verificationErrors.append(e.toString());
+        driver.findElement(By.xpath("//i")).click();
+    } catch (Exception e) {
     }
+    pause(1000); 
+    WebElement celdaEmail = driver.findElement(By.xpath("//tr[td[text()='Usuario111']]/td[2]"));
+    assertEquals(nuevoEmail, celdaEmail.getText(), "El email en la tabla no se actualizó correctamente.");
   }
 
   @AfterEach
@@ -91,11 +86,35 @@ public class UpdateFuncionalTest {
     try {
       driver.findElement(by);
       return true;
-    } catch (NoSuchElementException e) { 
+    } catch (NoSuchElementException e) {
       return false;
     }
   }
 
+  private boolean isAlertPresent() {
+    try {
+      driver.switchTo().alert();
+      return true;
+    } catch (NoAlertPresentException e) {
+      return false;
+    }
+  }
+
+  private String closeAlertAndGetItsText() {
+    try {
+      Alert alert = driver.switchTo().alert();
+      String alertText = alert.getText();
+      if (acceptNextAlert) {
+        alert.accept();
+      } else {
+        alert.dismiss();
+      }
+      return alertText;
+    } finally {
+      acceptNextAlert = true;
+    }
+  }
+  
   private void pause(long mils){
     try {
       Thread.sleep(mils);

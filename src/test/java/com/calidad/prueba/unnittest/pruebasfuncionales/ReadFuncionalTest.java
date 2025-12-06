@@ -2,10 +2,10 @@ package com.calidad.prueba.unnittest.pruebasfuncionales;
 
 import java.time.Duration;
 import java.util.Collections;
-import org.openqa.selenium.NoSuchElementException; 
+import java.util.NoSuchElementException;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
-
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -14,8 +14,11 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.NoAlertPresentException;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
 
 import io.github.bonigarcia.wdm.WebDriverManager;
 
@@ -29,6 +32,7 @@ public class ReadFuncionalTest {
 
   @BeforeEach
   public void setUp() throws Exception {
+    WebDriverManager.chromedriver().setup();
     ChromeOptions options = new ChromeOptions();
     options.addArguments("--incognito");
     options.addArguments("--start-maximized");
@@ -42,31 +46,15 @@ public class ReadFuncionalTest {
   }
 
   @Test
-  public void testReadKatalon() throws Exception {
+  public void testReadUser() throws Exception {
     driver.get("https://mern-crud-mpfr.onrender.com/");
-    pause(2000);
-    driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(2));
-    try {
-        driver.findElement(By.xpath("//td[contains(text(), 'Usuario111')]"));  
-        driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(60));
-        try {
-            assertEquals("Usuario111", driver.findElement(By.xpath("//td[contains(text(), 'Usuario111')]")).getText());
-        } catch (Error e) {
-            verificationErrors.append(e.toString());
-        }
-        try {
-            assertEquals("usuario111@gmail.com", driver.findElement(By.xpath("//td[contains(text(), 'usuario111@gmail.com')]")).getText());
-        } catch (Error e) {
-            verificationErrors.append(e.toString());
-        }
-
-      } catch (NoSuchElementException e) {
-        System.out.println("LOG: El usuario ya no existe. Finalizando prueba controladamente.");
-      return; 
-        
-    } finally {
-        driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(60));
-    }
+    WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+    wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//table/tbody/tr[1]")));
+    WebElement celdaNombre = driver.findElement(By.xpath("//td[text()='Usuario111']"));
+    assertEquals("Usuario111", celdaNombre.getText(), "El nombre del usuario no coincide en la tabla.");
+    WebElement celdaEmail = driver.findElement(By.xpath("//tr[td[text()='Usuario111']]//td[contains(text(), '@')]"));
+    assertEquals("usuario111@gmail.com", celdaEmail.getText(), "El correo electrónico no coincide con el registro original.");
+    assertTrue(celdaNombre.isDisplayed(), "El elemento existe en código pero no es visible en pantalla.");
   }
 
   @AfterEach
