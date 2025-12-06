@@ -29,8 +29,8 @@ jobs:
           command: mvn -B -DskipTests clean package
       # Then run your tests!
       - run:
-          name: Pruebas Calculadora
-          command: mvn test -Dtest=CalculadoraTest
+          name: pruebasfuncionales
+          command: mvn test -Dtest=AccesoUady2
 
 # Orchestrate jobs using workflows
 # See: https://circleci.com/docs/guides/orchestrate/workflows/ & https://circleci.com/docs/reference/configuration-reference/#workflows
